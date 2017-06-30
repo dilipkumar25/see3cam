@@ -56,11 +56,11 @@ Camera::Camera(ros::NodeHandle _comm_nh, ros::NodeHandle _param_nh) :
       exposure_pub = node.advertise<std_msgs::Float64>("exposure", 1, true);
 
       /* initialize the cameras */
-      cam = new uvc_cam::Cam(device.c_str(), uvc_cam::Cam::MODE_BAYER, width, height, fps);
+      cam = new uvc_cam::Cam(device.c_str(), uvc_cam::Cam::MODE_YUYV, width, height, fps);
       //cam->set_motion_thresholds(100, -1);
-      cam->set_control(0x009a0901, 1); // exposure, auto (0 = auto, 1 = manual)
-      cam->set_control(0x00980900, 8); // brightness
-      cam->set_control(0x9a0902, 78); // exposure time 15.6ms
+      cam->set_control(0x009a0901, 0); // exposure, auto (0 = auto, 1 = manual)
+      cam->set_control(0x00980900, 0); // brightness
+//      cam->set_control(0x9a0902, 78); // exposure time 15.6ms
       std_msgs::Float64 exposure_msg;
       exposure_msg.data=7.8 * 0.5;
       exposure_pub.publish( exposure_msg );
@@ -127,8 +127,8 @@ Camera::Camera(ros::NodeHandle _comm_nh, ros::NodeHandle _param_nh) :
 
              image->height = height;
              image->width = width;
-             image->step = width;
-             image->encoding = image_encodings::BAYER_GRBG8;
+             image->step = width * 2;
+             image->encoding = image_encodings::YUV422;
 
              image->header.stamp = capture_time;
              image->header.seq = pair_id;
